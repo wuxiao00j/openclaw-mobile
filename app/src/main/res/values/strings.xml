@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenClaw</string>
+    
+    <!-- A11y Service -->
+    <string name="a11y_service_description">OpenClaw 需要无障碍权限来自动化操作其他应用（如点击按钮、输入文字），这是 AI 控制手机所必需的。</string>
+    
+    <!-- Main Activity -->
+    <string name="status_initializing">初始化中…</string>
+    <string name="status_running">运行中</string>
+    <string name="status_stopped">已停止</string>
+    <string name="status_error">运行异常</string>
+    <string name="open_control_panel">打开控制面板</string>
+    <string name="view_logs">查看日志</string>
+    <string name="restart_service">重启服务</string>
+    <string name="api_key_config">API Key 配置</string>
+    <string name="edit">修改</string>
+    
+    <!-- Extraction -->
+    <string name="extraction_title">首次启动准备中</string>
+    <string name="extraction_message">正在解压运行环境</string>
+    <string name="extraction_time_remaining">预计还需 %d 秒</string>
+    <string name="extraction_background">切换到后台继续</string>
+    <string name="extraction_complete">准备完成，点击开始</string>
+    
+    <!-- Permissions -->
+    <string name="permission_a11y_title">需要无障碍权限</string>
+    <string name="permission_a11y_message">OpenClaw 需要无障碍权限才能控制您的设备。请在系统设置中找到「OpenClaw」并开启。</string>
+    <string name="permission_a11y_go_settings">去开启</string>
+    <string name="permission_battery_title">关闭电池优化</string>
+    <string name="permission_battery_message">为防止系统杀后台，建议将 OpenClaw 加入电池优化白名单。</string>
+    <string name="permission_battery_go_settings">去设置</string>
+    <string name="permission_overlay_title">需要悬浮窗权限</string>
+    <string name="permission_overlay_message">悬浮窗可以方便您随时查看 OpenClaw 状态。</string>
+    <string name="permission_screenshot_title">需要截图权限</string>
+    <string name="permission_screenshot_message">OpenClaw 需要截图权限来识别屏幕内容。</string>
+    <string name="permission_screenshot_grant">授权</string>
+    
+    <!-- Config -->
+    <string name="config_title">配置 AI 模型</string>
+    <string name="config_description">OpenClaw 支持多种模型和社交软件</string>
+    <string name="config_view_supported">查看支持列表</string>
+    <string name="config_api_key_hint">请输入 API Key</string>
+    <string name="config_auto_config">自动配置</string>
+    <string name="config_manual">或手动配置</string>
+    <string name="config_open_openclaw">打开 OpenClaw</string>
+    
+    <!-- Notifications -->
+    <string name="notification_channel_extraction">环境准备</string>
+    <string name="notification_channel_service">服务运行</string>
+    <string name="notification_extraction_title">正在准备 OpenClaw…</string>
+    <string name="notification_extraction_progress">已解压 %d%%</string>
+    <string name="notification_service_title">OpenClaw 运行中</string>
+    <string name="notification_service_content">点击打开控制面板</string>
+    
+    <!-- Errors -->
+    <string name="error_generic">出错了，请重试</string>
+    <string name="error_extraction_failed">环境准备失败，请检查存储空间</string>
+    <string name="error_port_in_use">端口被占用，尝试切换端口</string>
+    <string name="error_service_start_failed">服务启动失败</string>
+</resources>
