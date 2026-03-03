@@ -5,7 +5,7 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,6 +23,11 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        
     - name: Cache Gradle packages
       uses: actions/cache@v3
       with:
@@ -32,6 +37,74 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
+    
+    - name: Prepare Environment Package
+      run: |
+        echo "[*] Downloading Node.js Mobile..."
+        mkdir -p scripts/build
+        cd scripts/build
+        
+        # Try multiple mirrors
+        for url in \
+          "https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.17.0/nodejs-mobile-v18.17.0-android.tar.gz" \
+          "https://ghproxy.com/https://github.com/nodejs-mobile/nodejs-mobile/releases/download/v18.17.0/nodejs-mobile-v18.17.0-android.tar.gz"; do
+          echo "Trying: $url"
+          if curl -L --connect-timeout 60 -o nodejs-mobile.tar.gz "$url" 2>/dev/null; then
+            if [ -s nodejs-mobile.tar.gz ] && [ $(stat -c%s nodejs-mobile.tar.gz 2>/dev/null || stat -f%z nodejs-mobile.tar.gz 2>/dev/null || echo 0) -gt 1000000 ]; then
+              echo "✓ Downloaded successfully"
+              break
+            fi
+          fi
+          rm -f nodejs-mobile.tar.gz
+        done
+        
+        if [ ! -f nodejs-mobile.tar.gz ]; then
+          echo "✗ Failed to download Node.js Mobile"
+          exit 1
+        fi
+        
+        echo "[*] Extracting..."
+        mkdir -p nodejs-mobile
+        tar -xzf nodejs-mobile.tar.gz -C nodejs-mobile --strip-components=1
+        
+        echo "[*] Preparing environment..."
+        mkdir -p environment/nodejs/bin
+        mkdir -p environment/openclaw
+        
+        # Copy Node.js binary
+        if [ -d "nodejs-mobile/libnode/bin/arm64-v8a" ]; then
+          cp nodejs-mobile/libnode/bin/arm64-v8a/* environment/nodejs/bin/
+        else
+          find nodejs-mobile -name "node" -type f | head -1 | xargs -I {} cp {} environment/nodejs/bin/
+        fi
+        
+        echo "[*] Installing OpenClaw..."
+        cd environment/openclaw
+        npm init -y
+        npm install openclaw@latest --production
+        cd ..
+        
+        echo "[*] Creating start script..."
+        cat > openclaw/start.sh << 'EOF'
+#!/system/bin/sh
+export NODE_HOME="$(dirname "$0")/../nodejs"
+export PATH="$NODE_HOME/bin:$PATH"
+export HOME="$(dirname "$0")"
+export PORT="${PORT:-18789}"
+cd "$(dirname "$0")"
+exec "$NODE_HOME/bin/node" node_modules/openclaw/bin/openclaw gateway --port "$PORT" --verbose
+EOF
+        chmod +x openclaw/start.sh
+        
+        echo "[*] Packaging..."
+        zip -r environment.zip environment
+        
+        echo "[*] Moving to assets..."
+        mkdir -p ../../app/src/main/assets/
+        mv environment.zip ../../app/src/main/assets/
+        
+        echo "✓ Environment package ready"
+        ls -lh ../../app/src/main/assets/environment.zip
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -46,7 +119,7 @@ jobs:
         path: app/build/outputs/apk/debug/app-debug.apk
         retention-days: 7
         
-    - name: Build Release APK (unsigned)
+    - name: Build Release APK
       run: ./gradlew assembleRelease
       
     - name: Upload Release APK
