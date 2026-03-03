@@ -66,6 +66,19 @@ cd scripts
 ./gradlew assembleDebug
 ```
 
+### 阿里云 CI 一键构建（推荐）
+
+在阿里云 Shell 任务中使用：
+
+```bash
+ENV_URL='https://your-oss-or-release/environment.zip?...' bash scripts/ci-build-aliyun.sh
+```
+
+说明：
+- `ENV_URL` 为 `environment.zip` 下载链接（建议使用可长期访问链接）
+- 脚本会自动处理 Android SDK 检测/安装、`local.properties` 写入、Gradle 构建和失败日志摘要
+- 成功后 APK 路径：`app/build/outputs/apk/debug/app-debug.apk`
+
 ### 3. 安装测试
 
 ```bash
